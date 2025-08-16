@@ -49,4 +49,55 @@ describe('BrowserCell', () => {
       expect(component.props.className).toContain('required');
     });
   });
+  describe('Delete key interception', () => {
+    let obj;
+    let renderCellContent;
+
+    beforeEach(() => {
+      obj = {
+        set: jest.fn(),
+      };
+      renderCellContent = jest.fn();
+    });
+
+    it('should reset field value when Delete key is pressed', () => {
+      const element = (<BrowserCell field="username" obj={obj} />);
+      const testRenderer = renderer.create(element);
+      const instance = testRenderer.getInstance();
+      
+      const e = { key: 'Delete', preventDefault: jest.fn() };
+      instance.handleSensitiveFieldDelete(e, 'username', obj, renderCellContent);
+
+      expect(e.preventDefault).toHaveBeenCalled();
+      expect(obj.set).toHaveBeenCalledWith('username', null);
+      expect(renderCellContent).toHaveBeenCalled();
+    });
+
+    it('should reset field value when Backspace key is pressed', () => {
+      const element = (<BrowserCell field="password" obj={obj} />);
+      const testRenderer = renderer.create(element);
+      const instance = testRenderer.getInstance();  
+
+      const e = { key: 'Backspace', preventDefault: jest.fn() };
+      instance.handleSensitiveFieldDelete?.(e, 'password', obj, renderCellContent);
+
+      expect(e.preventDefault).toHaveBeenCalled();
+      expect(obj.set).toHaveBeenCalledWith('password', null);
+      expect(renderCellContent).toHaveBeenCalled();
+    });
+
+    it('should do nothing for other keys', () => {
+      const element = (<BrowserCell field="authData" obj={obj} />);
+      const testRenderer = renderer.create(element);
+      const instance = testRenderer.getInstance();
+
+      const e = { key: 'Enter', preventDefault: jest.fn() };
+      instance.handleSensitiveFieldDelete?.(e, 'password', obj, renderCellContent);
+      instance.handleSensitiveFieldDelete?.(e, 'authData', obj, renderCellContent);
+
+      expect(e.preventDefault).not.toHaveBeenCalled();
+      expect(obj.set).not.toHaveBeenCalled();
+      expect(renderCellContent).not.toHaveBeenCalled();
+    });
+  })
 });

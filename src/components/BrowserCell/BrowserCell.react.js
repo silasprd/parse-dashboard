@@ -515,6 +515,18 @@ export default class BrowserCell extends Component {
     }
   }
 
+  handleSensitiveFieldDelete = (e, field, obj, renderCellContent) => {
+    const deleteKeys = ['Delete', 'Backspace'];
+
+    if (!obj) return;
+
+    if (deleteKeys.includes(e.key)) {
+      e.preventDefault();
+      obj.set(field, null);
+      renderCellContent();
+    }
+  }
+
   pickFilter(constraint, addToExistingFilter) {
     const definition = Filters.Constraints[constraint];
     const { filters, type, value, field, className } = this.props;
@@ -643,6 +655,12 @@ export default class BrowserCell extends Component {
         ref={this.cellRef}
         className={classes.join(' ')}
         style={style}
+        tabIndex={0} // Make the cell focusable so it can receive keyboard events like Delete
+        onKeyDown={e => {
+          const { field, obj } = this.props;
+          // Handle intercept delete keys for sensitive fields
+          this.handleSensitiveFieldDelete(e, field, obj, this.renderCellContent.bind(this));      
+        }}
         onClick={e => {
           if (e.metaKey === true && type === 'Pointer') {
             onPointerCmdClick(value);

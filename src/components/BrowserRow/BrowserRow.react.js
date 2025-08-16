@@ -172,6 +172,7 @@ export default class BrowserRow extends Component {
               onFilterChange={onFilterChange}
               setRelation={setRelation}
               objectId={obj.id}
+              obj={obj}
               value={attr}
               hidden={hidden}
               isRequired={isRequired}
