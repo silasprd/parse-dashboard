@@ -18,6 +18,7 @@ import LoginDialog from 'dashboard/Data/Browser/LoginDialog.react';
 import SecureFieldsDialog from 'dashboard/Data/Browser/SecureFieldsDialog.react';
 import SecurityDialog from 'dashboard/Data/Browser/SecurityDialog.react';
 import prettyNumber from 'lib/prettyNumber';
+import { buildClassSchemaData } from 'lib/schemaUtils';
 import React, { useRef } from 'react';
 
 const BrowserToolbar = ({
@@ -214,53 +215,12 @@ const BrowserToolbar = ({
     onClick = null;
   }
 
-  const columns = {};
-  const userPointers = [];
-  const schemaSimplifiedData = {};
-  const classSchema = schema.data.get('classes').get(classNameForEditors);
-  if (classSchema) {
-    classSchema.forEach(({ type, targetClass }, col) => {
-      schemaSimplifiedData[col] = {
-        type,
-        targetClass,
-      };
-
-      columns[col] = { type, targetClass };
-
-      if (col === 'objectId' || (isUnique && col !== uniqueField)) {
-        return;
-      }
-      if ((type === 'Pointer' && targetClass === '_User') || type === 'Array') {
-        userPointers.push(col);
-      }
-    });
-  }
-
-  allClasses.forEach(className => {
-    const classSchema = schema.data.get('classes').get(className);
-
-    if (classSchema) {
-      schemaSimplifiedData[className] = {};
-
-      classSchema.forEach(({ type, targetClass }, col) => {
-        schemaSimplifiedData[className][col] = {
-          type,
-          targetClass,
-        };
-
-        columns[col] = { type, targetClass };
-
-        if (col === 'objectId' || (isUnique && col !== uniqueField)) {
-          return;
-        }
-        if ((type === 'Pointer' && targetClass === '_User') || type === 'Array') {
-          userPointers.push(col);
-        }
-      });
-    } else {
-      console.log(`Class ${className} not found in schema.`);
-    }
-  });
+  const { columns, userPointers, schemaSimplifiedData } = buildClassSchemaData(
+    schema,
+    classNameForEditors,
+    isUnique,
+    uniqueField
+  );
 
   const clpDialogRef = useRef(null);
   const protectedDialogRef = useRef(null);

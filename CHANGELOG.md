@@ -19,6 +19,10 @@ Details:
 
 > ### “If you are curious to see what's next!”
 
+### Bug Fixes
+
+- Fixed issue where Protected Fields would allow selecting columns that do not exist in the current class, causing silent save failures (#2953). Now, only columns belonging to the active class are displayed in the selector.
+
 These releases contain the latest development changes, but you should be prepared for anything, including sudden breaking changes or code refactoring. Use this branch to contribute to the project and open pull requests.
 
 Details:
