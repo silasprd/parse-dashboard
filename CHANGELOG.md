@@ -19,6 +19,10 @@ Details:
 
 > ### “If you are curious to see what's next!”
 
+### Bug Fixes
+
+- Fixed issue where deleting a field value in a new row would prevent saving the object (#1751). The delete key now sets the field value to null instead of using the Delete operation.
+
 These releases contain the latest development changes, but you should be prepared for anything, including sudden breaking changes or code refactoring. Use this branch to contribute to the project and open pull requests.
 
 Details:
