@@ -7,7 +7,7 @@
  */
 import Parse from 'parse';
 
-export default async function queryFromFilters(className, filters) {
+async function queryFromFilters(className, filters) {
   let primaryQuery;
   const querieslist = [];
   if (typeof className === 'string') {
@@ -109,7 +109,26 @@ function isPointer(value) {
   );
 }
 
+// Maps Parse authData fields to the internal _auth_data_<provider> format.
+function mapAuthDataField(field, compareTo) {
+  if (!field) {return field}; // Return if no field
+
+  const match = field.match(/^authData\.(.+)$/);
+  if (match) {
+    return `_auth_data_${match[1]}`; // Convert authData.<provider> to _auth_data_<provider>
+  }
+
+  if (field === 'authData' && compareTo) {
+    return `_auth_data_${compareTo}`; // Use compareTo as provider
+  }
+
+  return field;
+}
+
 function addConstraint(query, filter) {
+  const field = mapAuthDataField(filter.get('field'), filter.get('compareTo'));
+  const compareTo = filter.get('compareTo');
+
   switch (filter.get('constraint')) {
     case 'exists':
       query.exists(filter.get('field'));
@@ -138,8 +157,8 @@ function addConstraint(query, filter) {
       query.greaterThanOrEqualTo(filter.get('field'), filter.get('compareTo'));
       break;
     case 'starts':
-      const field = filter.get('field');
-      const compareTo = filter.get('compareTo');
+      // const field = filter.get('field');
+      // const compareTo = filter.get('compareTo');
       if (isPointer(compareTo)) {
         const pointerQuery = new Parse.Query(compareTo.className);
         pointerQuery.startsWith('objectId', compareTo.objectId);
@@ -172,10 +191,10 @@ function addConstraint(query, filter) {
       query.matches(filter.get('field'), filter.get('compareTo'), 'i');
       break;
     case 'keyExists':
-      query.exists(filter.get('field') + '.' + filter.get('compareTo'));
+      query.exists(field);
       break;
     case 'keyDne':
-      query.doesNotExist(filter.get('field') + '.' + filter.get('compareTo'));
+      query.doesNotExist(field);
       break;
     case 'keyEq':
       addQueryConstraintFromObject(query, filter, 'equalTo');
@@ -198,3 +217,6 @@ function addConstraint(query, filter) {
   }
   return query;
 }
+
+export default queryFromFilters;
+export { mapAuthDataField };

@@ -19,6 +19,10 @@ Details:
 
 > ### “If you are curious to see what's next!”
 
+### Bug Fixes
+
+- Fixed issue where filtering with authData "key does not exist" would show incorrect results (#2600). The filter now correctly ignores records that contain the authData key, showing only those that truly do not have it.
+
 These releases contain the latest development changes, but you should be prepared for anything, including sudden breaking changes or code refactoring. Use this branch to contribute to the project and open pull requests.
 
 Details:
