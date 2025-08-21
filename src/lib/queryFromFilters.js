@@ -7,7 +7,7 @@
  */
 import Parse from 'parse';
 
-export default async function queryFromFilters(className, filters) {
+async function queryFromFilters(className, filters) {
   let primaryQuery;
   const querieslist = [];
   if (typeof className === 'string') {
@@ -217,3 +217,6 @@ function addConstraint(query, filter) {
   }
   return query;
 }
+
+export default queryFromFilters;
+export { mapAuthDataField };
